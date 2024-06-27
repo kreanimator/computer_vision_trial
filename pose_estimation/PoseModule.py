@@ -1,6 +1,7 @@
 __author__ = "Valentin Bakin"
 
 from typing import List
+import csv
 import cv2
 import mediapipe as mp
 import time
@@ -118,6 +119,16 @@ class PoseDetector:
             'right_hand': self.right_hand_landmarks
         }
 
+    @staticmethod
+    def write_landmarks_to_csv(landmarks, filename='landmarks.csv'):
+        with open(filename, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Part', 'ID', 'X', 'Y'])
+            for part, lm_lists in landmarks.items():
+                for lm_list in lm_lists:
+                    for lm in lm_list:
+                        writer.writerow([part, lm[0], lm[1], lm[2]])
+
 
 def main():
     cap = cv2.VideoCapture(0)
@@ -159,9 +170,11 @@ def main():
 
         # Break the loop if 'Esc' key is pressed
         if cv2.waitKey(1) & 0xFF == 27:
+            PoseDetector.write_landmarks_to_csv(lm_list)
             break
         # Check if the window is closed by looking if any windows are still open
         if cv2.getWindowProperty("Image", cv2.WND_PROP_VISIBLE) < 1:
+            PoseDetector.write_landmarks_to_csv(lm_list)
             break
 
     cap.release()
