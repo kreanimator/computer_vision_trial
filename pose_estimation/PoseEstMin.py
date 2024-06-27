@@ -1,11 +1,13 @@
+__author__ = "Valentin Bakin"
+
 from typing import List
 import cv2
 import mediapipe as mp
 import time
 
 mp_draw = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
+mp_pose = mp.solutions.holistic
+pose = mp_pose.Holistic()
 
 cap = cv2.VideoCapture(0)
 p_time = 0

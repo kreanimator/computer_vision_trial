@@ -1,3 +1,6 @@
+__author__ = "Valentin Bakin"
+
+
 from typing import List
 import cv2
 import mediapipe as mp
