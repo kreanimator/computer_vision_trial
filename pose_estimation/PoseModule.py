@@ -91,7 +91,7 @@ class PoseDetector:
                                         landmark_drawing_spec=self.mp_draw.DrawingSpec(color=color, thickness=1,
                                                                                        circle_radius=radius))
 
-    def store_landmarks(self, img, landmarks, part) -> List:
+    def store_landmarks(self, img, landmarks, part) -> list:
         lm_list = []
         h, w, c = img.shape  # Get image dimensions
 
@@ -101,13 +101,13 @@ class PoseDetector:
 
         # Store landmarks based on part
         if part == 'body':
-            self.body_landmarks.append(lm_list)
+            self.body_landmarks.extend(lm_list)
         elif part == 'face':
-            self.face_landmarks.append(lm_list)
+            self.face_landmarks.extend(lm_list)
         elif part == 'left_hand':
-            self.left_hand_landmarks.append(lm_list)
+            self.left_hand_landmarks.extend(lm_list)
         elif part == 'right_hand':
-            self.right_hand_landmarks.append(lm_list)
+            self.right_hand_landmarks.extend(lm_list)
 
         return lm_list
 
@@ -122,12 +122,25 @@ class PoseDetector:
     @staticmethod
     def write_landmarks_to_csv(landmarks, filename='landmarks.csv'):
         with open(filename, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Part', 'ID', 'X', 'Y'])
+            fieldnames = ['Part', 'ID', 'X', 'Y']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+            writer.writeheader()
+
             for part, lm_lists in landmarks.items():
-                for lm_list in lm_lists:
-                    for lm in lm_list:
-                        writer.writerow([part, lm[0], lm[1], lm[2]])
+                for lm in lm_lists:
+                    if len(lm) == 3:  # Ensure lm has exactly three elements [lm_id, x, y]
+                        lm_id, x, y = lm  # Unpack lm [lm_id, x, y]
+                        writer.writerow({
+                            'Part': part,
+                            'ID': lm_id,
+                            'X': x,
+                            'Y': y
+                        })
+                        print(f"Writing: Part={part}, ID={lm_id}, X={x}, Y={y}")  # Add debug print
+                    else:
+                        print(f"Skipping invalid landmark format: {lm}")
+
 
 
 def main():
