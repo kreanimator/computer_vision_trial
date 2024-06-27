@@ -50,7 +50,7 @@ class PoseDetector:
         if draw:
             if self.results.pose_landmarks:
                 self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0), draw)
-                self.store_landmarks(self.results.pose_landmarks, 'body')
+                self.store_landmarks(img, self.results.pose_landmarks, 'body')
 
         return img
 
@@ -60,7 +60,7 @@ class PoseDetector:
         if draw:
             if results.face_landmarks:
                 self.draw_landmarks(img, results.face_landmarks, self.mp_holistic.FACEMESH_TESSELATION, (0, 255, 0), draw, radius=2)
-                self.store_landmarks(results.face_landmarks, 'face')
+                self.store_landmarks(img, results.face_landmarks, 'face')
 
         return img
 
@@ -70,7 +70,7 @@ class PoseDetector:
         if draw:
             if results.left_hand_landmarks:
                 self.draw_landmarks(img, results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (0, 0, 255), draw)
-                self.store_landmarks(results.left_hand_landmarks, 'left_hand')
+                self.store_landmarks(img, results.left_hand_landmarks, 'left_hand')
 
         return img
 
@@ -80,7 +80,7 @@ class PoseDetector:
         if draw:
             if results.right_hand_landmarks:
                 self.draw_landmarks(img, results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (255, 0, 0), draw)
-                self.store_landmarks(results.right_hand_landmarks, 'right_hand')
+                self.store_landmarks(img, results.right_hand_landmarks, 'right_hand')
 
         return img
 
@@ -90,7 +90,7 @@ class PoseDetector:
                                         landmark_drawing_spec=self.mp_draw.DrawingSpec(color=color, thickness=1,
                                                                                        circle_radius=radius))
 
-    def store_landmarks(self, landmarks, part):
+    def store_landmarks(self, img, landmarks, part):
         lm_list = []
         h, w, c = img.shape  # Get image dimensions
 
