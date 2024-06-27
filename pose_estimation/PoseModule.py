@@ -90,7 +90,7 @@ class PoseDetector:
                                         landmark_drawing_spec=self.mp_draw.DrawingSpec(color=color, thickness=1,
                                                                                        circle_radius=radius))
 
-    def store_landmarks(self, img, landmarks, part):
+    def store_landmarks(self, img, landmarks, part) -> list:
         lm_list = []
         h, w, c = img.shape  # Get image dimensions
 
@@ -170,4 +170,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
