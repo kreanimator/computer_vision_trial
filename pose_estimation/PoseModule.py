@@ -153,6 +153,8 @@ def main():
         if not success:
             break
 
+        # Flip the image horizontally to mirror it
+        img = cv2.flip(img, 1)
         # Process the image once and reuse the processed image
         processed_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
