@@ -60,7 +60,7 @@ class PoseDetector:
         results = self.holistic.process(img)  # Use the processed image directly
         if draw:
             if results.face_landmarks:
-                self.draw_landmarks(img, results.face_landmarks, self.mp_holistic.FACEMESH_TESSELATION, (0, 255, 0), draw, radius=2)
+                self.draw_landmarks(img, results.face_landmarks, None, (0, 255, 0), draw, radius=2)
                 self.store_landmarks(img, results.face_landmarks, 'face')
 
         return img
@@ -124,9 +124,7 @@ class PoseDetector:
         with open(filename, mode='w', newline='') as file:
             fieldnames = ['Part', 'ID', 'X', 'Y']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
-
             writer.writeheader()
-
             for part, lm_lists in landmarks.items():
                 for lm in lm_lists:
                     if len(lm) == 3:  # Ensure lm has exactly three elements [lm_id, x, y]
@@ -137,7 +135,7 @@ class PoseDetector:
                             'X': x,
                             'Y': y
                         })
-                        print(f"Writing: Part={part}, ID={lm_id}, X={x}, Y={y}")  # Add debug print
+                        print(f"Writing: Part={part}, ID={lm_id}, X={x}, Y={y}")  # Debug print
                     else:
                         print(f"Skipping invalid landmark format: {lm}")
 
