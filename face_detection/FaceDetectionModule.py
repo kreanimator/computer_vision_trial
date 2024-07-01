@@ -11,7 +11,7 @@ class FaceDetector:
         self.min_detection_con = min_detection_con
         self.mp_face_detection = mp.solutions.face_detection
         self.mp_draw = mp.solutions.drawing_utils
-        self.face_detection = self.mp_face_detection.FaceDetection()
+        self.face_detection = self.mp_face_detection.FaceDetection(min_detection_con)
 
     def find_faces(self, img, draw=True):
 
@@ -26,10 +26,33 @@ class FaceDetector:
                 bbox = int(bbox_c.xmin * iw), int(bbox_c.ymin * ih), \
                     int(bbox_c.width * iw), int(bbox_c.height * ih)
                 bboxs.append([id, bbox, detection.score])
-                cv2.rectangle(img, bbox, (255, 0, 255), 2)
-                cv2.putText(img, f'{int(detection.score[0] * 100)}%', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN,
+                if draw:
+                    img = self.modified_drawing(img, bbox)
+
+                    cv2.putText(img, f'{int(detection.score[0] * 100)}%', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN,
                             2, (255, 0, 255), 2)
+
         return img, bboxs
+
+    def modified_drawing(self, img, bbox, length=30, thickness=3, rt=1):
+        x, y, w, h = bbox
+        x1, y1 = x + w, y + h
+
+        cv2.rectangle(img, bbox, (255, 0, 255), rt)
+        # Top left corner x,y
+        cv2.line(img, (x, y), (x + length, y), (255, 0, 255), thickness)
+        cv2.line(img, (x, y), (x, y+length), (255, 0, 255), thickness)
+        # Top right corner x1,y
+        cv2.line(img, (x1, y), (x1 - length, y), (255, 0, 255), thickness)
+        cv2.line(img, (x1, y), (x1, y+length), (255, 0, 255), thickness)
+        # Bottom left corner x,y1
+        cv2.line(img, (x, y1), (x + length, y1), (255, 0, 255), thickness)
+        cv2.line(img, (x, y1), (x, y1 - length), (255, 0, 255), thickness)
+        # Bottom right corner x1,y1
+        cv2.line(img, (x1, y1), (x1 - length, y1), (255, 0, 255), thickness)
+        cv2.line(img, (x1, y1), (x1, y1 - length), (255, 0, 255), thickness)
+
+        return img
 
 
 def main():
