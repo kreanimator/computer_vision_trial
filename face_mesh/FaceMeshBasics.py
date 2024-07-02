@@ -22,6 +22,10 @@ while True:
         for face_lms in results.multi_face_landmarks:
             mp_draw.draw_landmarks(img, face_lms, mp_faceMesh.FACEMESH_CONTOURS, landmark_drawing_spec=draw_specs)
 
+            for lm in enumerate(face_lms.landmark):
+                ih, iw, ic = img.shape
+                x, y = int(lm.x * iw), int(lm.y * ih)
+
     c_time = time.time()
     fps = 1 / (c_time - p_time)
     p_time = c_time
