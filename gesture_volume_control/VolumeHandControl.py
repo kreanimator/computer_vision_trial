@@ -32,6 +32,9 @@ volume_range = volume.GetVolumeRange()
 
 min_vol = volume_range[0]
 max_vol = volume_range[1]
+vol = 0
+vol_bar = 400
+vol_per = 0
 
 while True:
     success, img = cap.read()
@@ -55,11 +58,18 @@ while True:
         #  Volume range -65 -> 0
 
         vol = np.interp(length, [30, 210], [min_vol, max_vol])
+        vol_bar = np.interp(length, [30, 210], [400, 150])
+        vol_per = np.interp(length, [30, 210], [0, 100])
         print(volume)
         volume.SetMasterVolumeLevel(vol, None)
 
         if length < 30:
             cv2.circle(img, (cx, cy), 10, (0, 0, 255), cv2.FILLED)
+
+    cv2.rectangle(img, (50, 150), (85, 400), (0,255 , 0), 3)
+    cv2.rectangle(img, (50, int(vol_bar)), (85, 400), (0,255 , 0), cv2.FILLED)
+    cv2.putText(img, f': {int(vol_per)} %', (40, 450), cv2.FONT_HERSHEY_PLAIN,
+                1, (0, 255, 0), 1)
 
     c_time = time.time()
     fps = 1 / (c_time - p_time)
@@ -68,11 +78,12 @@ while True:
                 1, (0, 255, 0), 1)
 
     cv2.imshow("Image", img)
-    cv2.waitKey(1)
+    # cv2.waitKey(1)
 
-    # Break the loop if 'Esc' key is pressed
-    if cv2.waitKey(1) & 0xFF == 27:
+    # Check for key press
+    key = cv2.waitKey(1) & 0xFF
+    if key == 27:  # ESC key
         break
-    # Check if the window is closed by looking if any windows are still open
+    # Check if the window is closed
     if cv2.getWindowProperty("Image", cv2.WND_PROP_VISIBLE) < 1:
         break
