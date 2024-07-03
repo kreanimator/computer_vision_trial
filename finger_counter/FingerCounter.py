@@ -22,9 +22,28 @@ for im_path in my_list:
     image = cv2.imread(f'{folder_path}/{im_path}')
     overlay_list.append(image)
 detector = htm.HandDetector(detection_confidence=0.7)
+tip_ids = [4, 8, 12, 16, 20]
+
 
 while True:
     success, img = cap.read()
+    img = detector.find_hands(img)
+    lm_list = detector.find_position(img, draw=False)
+
+    if len(lm_list) != 0:
+        fingers = []
+        #  Thumb
+        if lm_list[tip_ids[0]][1] > lm_list[tip_ids[0] - 1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
+        # Rest fingers (only for right hand for now)
+        for f_id in range(1,5):
+            if lm_list[tip_ids[f_id]][2] < lm_list[tip_ids[f_id]-2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+        # print(fingers)
 
     h, w, c = overlay_list[0].shape
     img[0:h, 0:w] = overlay_list[0]
