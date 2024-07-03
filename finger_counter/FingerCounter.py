@@ -44,9 +44,11 @@ while True:
             else:
                 fingers.append(0)
         # print(fingers)
+        total_fingers = fingers.count(1)
+        print(total_fingers)
 
-    h, w, c = overlay_list[0].shape
-    img[0:h, 0:w] = overlay_list[0]
+        h, w, c = overlay_list[total_fingers -1].shape
+        img[0:h, 0:w] = overlay_list[total_fingers -1]
 
     c_time = time.time()
     fps = 1 / (c_time - p_time)
