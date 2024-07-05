@@ -10,9 +10,16 @@ from pose_estimation import PoseModule as pm
 cap = cv2.VideoCapture(0)
 w_cam, h_cam = 1280, 720
 
+detector = pm.PoseDetector()
+
 while True:
     success, img = cap.read()
 
+    img = detector.find_pose(img)
+    lm_list = detector.get_all_landmarks()
+    # print(lm_list)
+    if len(lm_list) != 0:
+        pass
     img = cv2.resize(img, (w_cam, h_cam))
     cv2.imshow("Image", img)
     key = cv2.waitKey(1) & 0xFF
