@@ -61,7 +61,7 @@ class HandDetector:
                     cv2.circle(img, (cx, cy), point_radius, (255, 0, 255), cv2.FILLED)
         return self.lm_list
 
-    def detect_which_finger_is_up(self, img,):
+    def detect_which_finger_is_up(self):
 
         fingers = []
         #  Thumb
