@@ -26,7 +26,8 @@ def draw_cursor(image, x, y, color):
     cv2.circle(image, (x, y), 30, color, 3)
 
 
-img_canvas = np.full((720, 1280, 3), (100, 100, 100), np.uint8)
+# img_canvas = np.full((720, 1280, 3), (100, 100, 100), np.uint8)
+img_canvas = np.zeros((720, 1280, 3), np.uint8)
 
 while True:
     # 1. Import image
@@ -35,13 +36,13 @@ while True:
         break
 
     img = cv2.flip(img, 1)
-    img[0:120, 0:width] = menu
 
     # 2. Find hand landmarks
     img = detector.find_hands(img)
     lm_list = detector.find_position(img, draw=False)  # Use draw=False to avoid drawing landmarks
 
     if len(lm_list) != 0:
+
         # Tip of index and middle finger
         x1, y1 = lm_list[8][1:]  # Index finger
         x2, y2 = lm_list[12][1:]  # Middle finger
@@ -51,6 +52,8 @@ while True:
 
         # 4. If selection mode - Two fingers are up
         if fingers[1] and fingers[2]:
+            xp, yp = 0, 0
+            print("Selection mode")
             if y1 < 120:
                 # Purple
                 if 200 < x1 < 350:
@@ -72,25 +75,28 @@ while True:
                     cursor_x, cursor_y = 815, 60
                     cursor_color = (0, 0, 0)
                     selected_color = (255, 255, 255)
-                # Black
+                # Red
                 elif 950 < x1 < 1050:
                     cursor_x, cursor_y = 1005, 60
-                    cursor_color = (255, 255, 255)
-                    selected_color = (0, 0, 0)
+                    cursor_color = (0, 0, 255)
+                    selected_color = (0, 0, 255)
                 # Eraser
                 elif 1150 < x1 < 1280:
                     cursor_x, cursor_y = 1195, 60
                     cursor_color = (0, 0, 0)
-                    selected_color =(100, 100, 100)
+                    selected_color = (0, 0, 0)
             cv2.circle(img, (x1, y1), 30, selected_color, 3)
 
         # 5. If draw mode - Index finger is up
         if fingers[1] and not fingers[2]:
+            # xp, yp = 0, 0
+            print("Drawing mode")
+
             cv2.circle(img, (x1, y1), 15, selected_color, cv2.FILLED)
 
             if xp == 0 and yp == 0:
                 xp, yp = x1, y1
-            if selected_color == (100,100,100):
+            if selected_color == (0, 0, 0):
                 cv2.line(img, (xp, yp), (x1, y1), selected_color, eraser_thickness)
                 cv2.line(img_canvas, (xp, yp), (x1, y1), selected_color, eraser_thickness)
             else:
@@ -101,8 +107,16 @@ while True:
     if selected_color is not None and cursor_x is not None and cursor_y is not None:
         draw_cursor(img, cursor_x, cursor_y, cursor_color)
 
+    img_gray = cv2.cvtColor(img_canvas, cv2.COLOR_BGR2GRAY)
+    _, img_inv = cv2.threshold(img_gray, 50, 255, cv2.THRESH_BINARY_INV)
+    img_inv = cv2.cvtColor(img_inv, cv2.COLOR_GRAY2BGR)
+
+    img = cv2.bitwise_and(img, img_inv)
+    img = cv2.bitwise_or(img, img_canvas)
+
+    img[0:120, 0:width] = menu
     cv2.imshow("Image", img)
-    cv2.imshow("Canvas", img_canvas)
+    # cv2.imshow("Canvas", img_canvas)
 
     # Check for key press
     key = cv2.waitKey(1) & 0xFF
