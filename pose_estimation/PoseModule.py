@@ -5,6 +5,7 @@ import csv
 import cv2
 import mediapipe as mp
 import time
+import math
 
 
 class PoseDetector:
@@ -44,14 +45,17 @@ class PoseDetector:
     def find_pose(self, img, draw=True):
         # Convert the BGR image to RGB
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         # Process the RGB image with the Holistic model
         self.results = self.holistic.process(img_rgb)
 
         # Draw pose landmarks
-        if draw:
-            if self.results.pose_landmarks:
-                self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0), draw)
-                self.store_landmarks(img, self.results.pose_landmarks, 'body')
+
+        if self.results.pose_landmarks:
+            if draw:
+                self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0),
+                                    draw)
+        self.store_landmarks(img, self.results.pose_landmarks, 'body')
 
         return img
 
@@ -70,7 +74,8 @@ class PoseDetector:
         results = self.holistic.process(img)  # Use the processed image directly
         if draw:
             if results.left_hand_landmarks:
-                self.draw_landmarks(img, results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (0, 0, 255), draw)
+                self.draw_landmarks(img, results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (0, 0, 255),
+                                    draw)
                 self.store_landmarks(img, results.left_hand_landmarks, 'left_hand')
 
         return img
@@ -80,7 +85,8 @@ class PoseDetector:
         results = self.holistic.process(img)  # Use the processed image directly
         if draw:
             if results.right_hand_landmarks:
-                self.draw_landmarks(img, results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (255, 0, 0), draw)
+                self.draw_landmarks(img, results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (255, 0, 0),
+                                    draw)
                 self.store_landmarks(img, results.right_hand_landmarks, 'right_hand')
 
         return img
@@ -101,13 +107,13 @@ class PoseDetector:
 
         # Store landmarks based on part
         if part == 'body':
-            self.body_landmarks.extend(lm_list)
+            self.body_landmarks = lm_list
         elif part == 'face':
-            self.face_landmarks.extend(lm_list)
+            self.face_landmarks = lm_list
         elif part == 'left_hand':
-            self.left_hand_landmarks.extend(lm_list)
+            self.left_hand_landmarks = lm_list
         elif part == 'right_hand':
-            self.right_hand_landmarks.extend(lm_list)
+            self.right_hand_landmarks = lm_list
 
         return lm_list
 
@@ -139,6 +145,42 @@ class PoseDetector:
                     else:
                         print(f"Skipping invalid landmark format: {lm}")
 
+    def find_angle(self, img, p1, p2, p3, draw=True):
+        lm_dict = self.get_all_landmarks()
+        body_landmarks = lm_dict.get('body', [])
+        angle = None
+
+        # Check if the body landmarks list is not empty and contains the necessary points
+        if len(body_landmarks) > max(p1, p2, p3):
+            # Get the landmarks
+            x1, y1 = body_landmarks[p1][1:]
+            x2, y2 = body_landmarks[p2][1:]
+            x3, y3 = body_landmarks[p3][1:]
+
+            # Calculate the angle
+            angle = math.degrees(math.atan2(y3 - y2, x3 - x2) -
+                                 math.atan2(y1 - y2, x1 - x2))
+            if angle < 0:
+                angle += 360
+
+            if draw:
+                cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 3)
+                cv2.line(img, (x3, y3), (x2, y2), (255, 255, 255), 3)
+
+                cv2.circle(img, (x1, y1), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (x1, y1), 15, (0, 0, 255), 3)
+                cv2.circle(img, (x2, y2), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (x2, y2), 15, (0, 0, 255), 3)
+                cv2.circle(img, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
+                cv2.circle(img, (x3, y3), 15, (0, 0, 255), 3)
+                #  Display the angle
+                # cv2.putText(img, str(int(angle)), (x2 - 50, y2 + 50),
+                #             cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+                # print(f'Print angle from find_angle func {angle}')
+        else:
+            print("Insufficient body landmarks to calculate angle")
+
+        return angle
 
 
 def main():

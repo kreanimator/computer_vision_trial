@@ -2,8 +2,6 @@ __author__ = "Valentin Bakin"
 
 import cv2
 import time
-import math
-import numpy as np
 import os
 
 from hand_tracking import HandTrackingModule as htm
