@@ -173,8 +173,9 @@ class PoseDetector:
                 cv2.circle(img, (x2, y2), 15, (0, 0, 255), 3)
                 cv2.circle(img, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
                 cv2.circle(img, (x3, y3), 15, (0, 0, 255), 3)
-                cv2.putText(img, str(int(angle)), (x2 - 50, y2 + 50),
-                            cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+                #  Display the angle
+                # cv2.putText(img, str(int(angle)), (x2 - 50, y2 + 50),
+                #             cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
                 # print(f'Print angle from find_angle func {angle}')
         else:
             print("Insufficient body landmarks to calculate angle")

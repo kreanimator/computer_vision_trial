@@ -45,6 +45,10 @@ while True:
 
         per_rh = np.interp(angle_rh, (180, 330), (0, 100))
         # print(f'Right hand angle: {angle_rh} percentage: {per_rh}')
+
+        bar_lh = np.interp(angle_lh, (40, 170), (100, 550))
+        bar_rh = np.interp(angle_rh, (190, 320), (550, 100))
+
         if per_lh == 100:
             if direction_lh == 0:
                 count_lh += 0.5
@@ -61,18 +65,26 @@ while True:
             if direction_rh == 1:
                 count_rh += 0.5
                 direction_rh = 0
-    cv2.rectangle(img, (50, 540), (100, 620), (255, 255, 255), cv2.FILLED)  # Left hand rectangle
-    cv2.rectangle(img, (1080, 540), (1130, 620), (255, 255, 255), cv2.FILLED)  # Right hand rectangle
-    cv2.putText(img, str(int(count_lh)), (1080, 620),
+
+        cv2.rectangle(img, (1100, 100), (1175, 550), (255, 255, 255), 3)  # Left hand bar
+        cv2.rectangle(img, (1100, int(bar_lh)), (1175, 550),  (255, 255, 255), cv2.FILLED)  # Left hand bar
+
+        cv2.rectangle(img, (50, 100), (125, 550), (255, 255, 255), 3)  # Right hand bar
+        cv2.rectangle(img, (50, int(bar_rh)), (125, 550), (255, 255, 255), cv2.FILLED)  # Right hand bar
+
+    cv2.rectangle(img, (50, 560), (125, 620), (255, 255, 255), cv2.FILLED)  # Right hand rectangle
+    cv2.rectangle(img, (1100, 560), (1180, 620), (255, 255, 255), cv2.FILLED)  # Left hand rectangle
+
+    cv2.putText(img, str(int(count_lh)), (1112, 620),
                 cv2.FONT_HERSHEY_PLAIN, 5, (0, 0, 0), 5)
-    cv2.putText(img, str(int(count_rh)), (50, 620),
+    cv2.putText(img, str(int(count_rh)), (62, 620),
                 cv2.FONT_HERSHEY_PLAIN, 5, (0, 0, 0), 5)
 
     c_time = time.time()
     fps = 1 / (c_time - p_time)
     p_time = c_time
 
-    cv2.putText(img, f'FPS: {int(fps)}', (1080, 100),
+    cv2.putText(img, f'FPS: {int(fps)}', (1080, 50),
                 cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
 
     # Display the image
