@@ -50,7 +50,8 @@ class PoseDetector:
         # Draw pose landmarks
         if draw:
             if self.results.pose_landmarks:
-                self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0), draw)
+                self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0),
+                                    draw)
                 self.store_landmarks(img, self.results.pose_landmarks, 'body')
 
         return img
@@ -70,7 +71,8 @@ class PoseDetector:
         results = self.holistic.process(img)  # Use the processed image directly
         if draw:
             if results.left_hand_landmarks:
-                self.draw_landmarks(img, results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (0, 0, 255), draw)
+                self.draw_landmarks(img, results.left_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (0, 0, 255),
+                                    draw)
                 self.store_landmarks(img, results.left_hand_landmarks, 'left_hand')
 
         return img
@@ -80,7 +82,8 @@ class PoseDetector:
         results = self.holistic.process(img)  # Use the processed image directly
         if draw:
             if results.right_hand_landmarks:
-                self.draw_landmarks(img, results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (255, 0, 0), draw)
+                self.draw_landmarks(img, results.right_hand_landmarks, self.mp_holistic.HAND_CONNECTIONS, (255, 0, 0),
+                                    draw)
                 self.store_landmarks(img, results.right_hand_landmarks, 'right_hand')
 
         return img
@@ -92,24 +95,24 @@ class PoseDetector:
                                                                                        circle_radius=radius))
 
     def store_landmarks(self, img, landmarks, part) -> list:
-        lm_list = []
+        self.lm_list = []
         h, w, c = img.shape  # Get image dimensions
 
         for lm_id, lm in enumerate(landmarks.landmark):
             cx, cy = int(lm.x * w), int(lm.y * h)
-            lm_list.append([lm_id, cx, cy])
+            self.lm_list.append([lm_id, cx, cy])
 
         # Store landmarks based on part
         if part == 'body':
-            self.body_landmarks.extend(lm_list)
+            self.body_landmarks.extend(self.lm_list)
         elif part == 'face':
-            self.face_landmarks.extend(lm_list)
+            self.face_landmarks.extend(self.lm_list)
         elif part == 'left_hand':
-            self.left_hand_landmarks.extend(lm_list)
+            self.left_hand_landmarks.extend(self.lm_list)
         elif part == 'right_hand':
-            self.right_hand_landmarks.extend(lm_list)
+            self.right_hand_landmarks.extend(self.lm_list)
 
-        return lm_list
+        return self.lm_list
 
     def get_all_landmarks(self):
         return {
@@ -139,6 +142,21 @@ class PoseDetector:
                     else:
                         print(f"Skipping invalid landmark format: {lm}")
 
+    def find_angle(self, img, p1, p2, p3, draw=True):
+
+        x1, y1 = self.body_landmarks[p1][1:]
+        x2, y2 = self.body_landmarks[p2][1:]
+        x3, y3 = self.body_landmarks[p3][1:]
+        if draw:
+            cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 3)
+            cv2.line(img, (x3, y3), (x2, y2), (255, 255, 255), 3)
+
+            cv2.circle(img, (x1, y1), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x1, y1), 15, (0, 0, 255), 2)
+            cv2.circle(img, (x2, y2), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x2, y2), 15, (0, 0, 255), 2)
+            cv2.circle(img, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
+            cv2.circle(img, (x3, y3), 15, (0, 0, 255), 2)
 
 
 def main():
