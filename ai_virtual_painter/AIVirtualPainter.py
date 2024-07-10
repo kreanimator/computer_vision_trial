@@ -11,7 +11,7 @@ cap = cv2.VideoCapture(0)
 cap.set(3, width)
 cap.set(4, height)
 
-detector = htm.HandDetector(detection_confidence=0.65)
+detector = htm.HandDetector(detection_confidence=0.85)
 
 # Initialize cursor position variables
 cursor_x = None
