@@ -45,6 +45,7 @@ class PoseDetector:
     def find_pose(self, img, draw=True):
         # Convert the BGR image to RGB
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
         # Process the RGB image with the Holistic model
         self.results = self.holistic.process(img_rgb)
 

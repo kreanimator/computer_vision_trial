@@ -16,6 +16,7 @@ count_lh = 0
 count_rh = 0
 direction_lh = 0
 direction_rh = 0
+p_time = 0
 
 while True:
     success, img = cap.read()
@@ -47,9 +48,33 @@ while True:
         if per_lh == 100:
             if direction_lh == 0:
                 count_lh += 0.5
+                direction_lh = 1
+        if per_lh == 0:
+            if direction_lh == 1:
+                count_lh += 0.5
+                direction_lh = 0
         if per_rh == 100:
             if direction_rh == 0:
                 count_rh += 0.5
+                direction_rh = 1
+        if per_rh == 0:
+            if direction_rh == 1:
+                count_rh += 0.5
+                direction_rh = 0
+    cv2.rectangle(img, (50, 540), (100, 620), (255, 255, 255), cv2.FILLED)  # Left hand rectangle
+    cv2.rectangle(img, (1080, 540), (1130, 620), (255, 255, 255), cv2.FILLED)  # Right hand rectangle
+    cv2.putText(img, str(int(count_lh)), (1080, 620),
+                cv2.FONT_HERSHEY_PLAIN, 5, (0, 0, 0), 5)
+    cv2.putText(img, str(int(count_rh)), (50, 620),
+                cv2.FONT_HERSHEY_PLAIN, 5, (0, 0, 0), 5)
+
+    c_time = time.time()
+    fps = 1 / (c_time - p_time)
+    p_time = c_time
+
+    cv2.putText(img, f'FPS: {int(fps)}', (1080, 100),
+                cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0), 2)
+
     # Display the image
     cv2.imshow("Image", img)
 
