@@ -28,6 +28,7 @@ class HandDetector:
                                         self.detection_confidence, self.tracking_confidence)
         # Set up drawing utilities for hand landmarks
         self.mpDraw = mp.solutions.drawing_utils
+        self.tip_ids = [4, 8, 12, 16, 20]
 
     def find_hands(self, img, draw=True):
         # Convert the image from BGR to RGB
@@ -44,7 +45,7 @@ class HandDetector:
 
     def find_position(self, img, hand_no=0, draw=True, point_radius=5) -> List:
         # Initialize list to hold landmark positions
-        lm_list = []
+        self.lm_list = []
         # Check if hand landmarks are detected
         if self.results and self.results.multi_hand_landmarks:
             # Select the specified hand
@@ -54,12 +55,28 @@ class HandDetector:
             for lm_id, lm in enumerate(my_hand.landmark):
                 # Convert normalized coordinates to pixel coordinates
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                lm_list.append([lm_id, cx, cy])
+                self.lm_list.append([lm_id, cx, cy])
                 # Draw a circle at the landmark if draw is True
                 if draw:
                     cv2.circle(img, (cx, cy), point_radius, (255, 0, 255), cv2.FILLED)
-        return lm_list
+        return self.lm_list
 
+    def detect_which_finger_is_up(self, img,):
+
+        fingers = []
+        #  Thumb
+        if self.lm_list[self.tip_ids[0]][1] > self.lm_list[self.tip_ids[0] - 1][1]:
+            fingers.append(1)
+        else:
+            fingers.append(0)
+        # Rest fingers (only for right hand for now)
+        for f_id in range(1,5):
+            if self.lm_list[self.tip_ids[f_id]][2] < self.lm_list[self.tip_ids[f_id]-2][2]:
+                fingers.append(1)
+            else:
+                fingers.append(0)
+
+        return fingers
 
 def main():
     # Initialize variables for calculating FPS
