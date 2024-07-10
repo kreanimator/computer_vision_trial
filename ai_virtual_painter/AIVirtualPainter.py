@@ -25,7 +25,6 @@ def draw_cursor(image, x, y, color):
     cv2.circle(image, (x, y), 20, color, cv2.FILLED)
     cv2.circle(image, (x, y), 30, color, 3)
 
-
 # img_canvas = np.full((720, 1280, 3), (100, 100, 100), np.uint8)
 img_canvas = np.zeros((720, 1280, 3), np.uint8)
 
