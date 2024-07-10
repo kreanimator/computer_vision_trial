@@ -11,7 +11,7 @@ cap = cv2.VideoCapture(0)
 cap.set(3, width)
 cap.set(4, height)
 
-detector = htm.HandDetector(detection_confidence=0.65)
+detector = htm.HandDetector(detection_confidence=0.85)
 
 # Initialize cursor position variables
 cursor_x = None
@@ -24,7 +24,6 @@ xp, yp = 0, 0
 def draw_cursor(image, x, y, color):
     cv2.circle(image, (x, y), 20, color, cv2.FILLED)
     cv2.circle(image, (x, y), 30, color, 3)
-
 
 # img_canvas = np.full((720, 1280, 3), (100, 100, 100), np.uint8)
 img_canvas = np.zeros((720, 1280, 3), np.uint8)
