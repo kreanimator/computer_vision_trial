@@ -5,6 +5,7 @@ import csv
 import cv2
 import mediapipe as mp
 import time
+import math
 
 
 class PoseDetector:
@@ -48,11 +49,12 @@ class PoseDetector:
         self.results = self.holistic.process(img_rgb)
 
         # Draw pose landmarks
-        if draw:
-            if self.results.pose_landmarks:
+
+        if self.results.pose_landmarks:
+            if draw:
                 self.draw_landmarks(img, self.results.pose_landmarks, self.mp_holistic.POSE_CONNECTIONS, (255, 0, 0),
                                     draw)
-                self.store_landmarks(img, self.results.pose_landmarks, 'body')
+        self.store_landmarks(img, self.results.pose_landmarks, 'body')
 
         return img
 
@@ -144,19 +146,26 @@ class PoseDetector:
 
     def find_angle(self, img, p1, p2, p3, draw=True):
 
+        #  Get the landmarks
         x1, y1 = self.body_landmarks[p1][1:]
         x2, y2 = self.body_landmarks[p2][1:]
         x3, y3 = self.body_landmarks[p3][1:]
+
+        # Calculate the angle
+
+        angle = math.degrees(math.atan2(y3 - y2, x3 - x2) -
+                 math.atan2(y1 - y2, x1 - x2))
+        print(angle)
         if draw:
             cv2.line(img, (x1, y1), (x2, y2), (255, 255, 255), 3)
             cv2.line(img, (x3, y3), (x2, y2), (255, 255, 255), 3)
 
             cv2.circle(img, (x1, y1), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (x1, y1), 15, (0, 0, 255), 2)
+            # cv2.circle(img, (x1, y1), 15, (0, 0, 255), 2)
             cv2.circle(img, (x2, y2), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (x2, y2), 15, (0, 0, 255), 2)
+            # cv2.circle(img, (x2, y2), 15, (0, 0, 255), 2)
             cv2.circle(img, (x3, y3), 10, (0, 0, 255), cv2.FILLED)
-            cv2.circle(img, (x3, y3), 15, (0, 0, 255), 2)
+            # cv2.circle(img, (x3, y3), 15, (0, 0, 255), 2)
 
 
 def main():
