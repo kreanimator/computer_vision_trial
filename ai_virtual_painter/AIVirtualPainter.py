@@ -1,3 +1,5 @@
+__author__ = "Valentin Bakin"
+
 import cv2
 import numpy as np
 from hand_tracking import HandTrackingModule as htm
